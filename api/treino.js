@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
     if (req.method === "PUT") {
       const data = req.body?.data;
-      if (!Array.isArray(data) || JSON.stringify(data).length > 100000) {
+      if (!data || typeof data !== "object" || JSON.stringify(data).length > 100000) {
         return res.status(400).json({ error: "Dados inválidos" });
       }
       await redis.set(key, data);
