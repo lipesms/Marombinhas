@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
+const DEFAULT_TITLE = "Planejamento academia"
 
 // Transforma "Felipe Souza!" em "felipe-souza" (só letras, números, - e _)
 function slugify(text) {
@@ -108,6 +109,7 @@ function Home() {
 
 /* ---------------- Treino de uma pessoa ---------------- */
 function Planner({ user }) {
+  const [title, setTitle] = useState(DEFAULT_TITLE);
   const [workouts, setWorkouts] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [newId, setNewId] = useState(null);
@@ -123,9 +125,12 @@ function Planner({ user }) {
         return r.json();
       })
       .then(({ data }) => {
-        const list = data?.length
-          ? data
+        // aceita o formato antigo (lista) e o novo ({ title, workouts })
+        const saved = Array.isArray(data) ? data : data?.workouts;
+        const list = saved?.length
+          ? saved
           : [{ id: uid(), name: "Superior", exercises: [] }];
+        setTitle((!Array.isArray(data) && data?.title) || DEFAULT_TITLE);
         setWorkouts(list);
         setActiveId(list[0].id);
         skipSave.current = true; // não regravar o que acabou de ser lido
@@ -147,7 +152,7 @@ function Planner({ user }) {
         const r = await fetch(`/api/treino?user=${user}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data: workouts }),
+          body: JSON.stringify({ data: { title, workouts } }),
         });
         if (!r.ok) throw new Error();
         setSaved("saved");
@@ -156,18 +161,28 @@ function Planner({ user }) {
       }
     }, 500);
     return () => clearTimeout(t);
-  }, [workouts, status, user]);
+   }, [workouts, title, status, user]);
 
   const header = (
     <>
-      <h1>Planejamento academia</h1>
-      <p className="who">
-        <a href="/">início</a> · {location.host}/{user} ·{" "}
-        {status === "loading" && "carregando…"}
-        {status === "ready" && saved === "saving" && "salvando…"}
-        {status === "ready" && saved === "saved" && "salvo"}
-        {status === "ready" && saved === "error" && "não salvou, confira a conexão"}
-      </p>
+      <h1 className="page-title">
+        {status === "ready" ? (
+          <Editable value={title} onSave={setTitle} />
+        ) : status === "error" ? (
+          title
+        ) : (
+          "\u00A0"
+        )}
+      </h1>
+      <div className="bar">
+        <a href="/">← início</a>
+        <span>
+          {status === "loading" && "Carregando…"}
+          {status === "ready" && saved === "saving" && "Salvando…"}
+          {status === "ready" && saved === "saved" && "Salvo"}
+          {status === "ready" && saved === "error" && "Não salvou"}
+        </span>
+      </div>
     </>
   );
 
