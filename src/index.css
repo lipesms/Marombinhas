@@ -6,9 +6,9 @@
   --line: #e8e5ee;
   --accent: #6b4a9e;
   --accent-soft: #efe9f6;
-  --amber: #8a5a00;
-  --amber-soft: #fdf0d3;
   --teal: #3f8f7c;
+  --btn: #6b4a9e;
+  --btn-soft: #efe9f6;
 }
 
 :root[data-theme="dark"] {
@@ -20,9 +20,9 @@
   --line: #2a2a36;
   --accent: #7a58bd;
   --accent-soft: #2a2238;
-  --amber: #f5b83d;
-  --amber-soft: #3a2d10;
   --teal: #5cc0a8;
+  --btn: #f5b83d;
+  --btn-soft: #3a2d10;
 }
 * { box-sizing: border-box; margin: 0; }
 html, body { background: var(--bg); }
@@ -71,7 +71,7 @@ h1 {
   user-select: none; cursor: pointer; transition: background 0.15s, color 0.15s;
 }
 .tab.on { background: var(--accent); color: #fff; }
-.tab.plus { width: 42px; padding: 10px 0; font-size: 1.1rem; background: var(--amber-soft); color: var(--amber); }
+.tab.plus { width: 42px; padding: 10px 0; font-size: 1.1rem; background: var(--btn-soft); color: var(--btn); }
 
 /* ---------- Painel ---------- */
 .panel {
@@ -105,7 +105,7 @@ input.editing {
 
 .add {
   margin-top: 18px; padding: 11px 18px; border-radius: 999px;
-  background: var(--amber-soft); color: var(--amber); font-weight: 600; font-size: 0.95rem;
+  background: var(--btn-soft); color: var(--btn); font-weight: 600; font-size: 0.95rem;
 }
 .add:disabled { opacity: 0.5; cursor: default; }
 .add:active, .tab.plus:active { transform: scale(0.96); }
