@@ -1,11 +1,14 @@
 :root {
-  --bg: #f4f3ff;
+  --bg: #f5f3f6;
   --card: #ffffff;
-  --ink: #17153b;
-  --muted: #8b89ad;
-  --line: #e6e4f7;
-  --accent: #4b3bff;
-  --accent-soft: #ebe9ff;
+  --ink: #1c1a26;
+  --muted: #70748a;
+  --line: #e8e5ee;
+  --accent: #6b4a9e;
+  --accent-soft: #efe9f6;
+  --amber: #8a5a00;
+  --amber-soft: #fdf0d3;
+  --teal: #3f8f7c;
 }
 * { box-sizing: border-box; margin: 0; }
 html, body { background: var(--bg); }
@@ -54,12 +57,12 @@ h1 {
   user-select: none; cursor: pointer; transition: background 0.15s, color 0.15s;
 }
 .tab.on { background: var(--accent); color: #fff; }
-.tab.plus { width: 42px; padding: 10px 0; font-size: 1.1rem; color: var(--accent); background: var(--accent-soft); }
+.tab.plus { width: 42px; padding: 10px 0; font-size: 1.1rem; background: var(--amber-soft); color: var(--amber); }
 
 /* ---------- Painel ---------- */
 .panel {
   background: var(--card); border-radius: 24px; padding: 8px 16px 20px;
-  box-shadow: 0 12px 32px -18px rgba(75, 59, 255, 0.35);
+  box-shadow: 0 12px 32px -18px rgba(107, 74, 158, 0.35);
 }
 .row {
   display: grid; grid-template-columns: 1fr 64px 64px 24px;
@@ -88,7 +91,7 @@ input.editing {
 
 .add {
   margin-top: 18px; padding: 11px 18px; border-radius: 999px;
-  background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 0.95rem;
+  background: var(--amber-soft); color: var(--amber); font-weight: 600; font-size: 0.95rem;
 }
 .add:disabled { opacity: 0.5; cursor: default; }
 .add:active, .tab.plus:active { transform: scale(0.96); }
@@ -122,3 +125,5 @@ code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; b
   .row { grid-template-columns: 1fr 96px 96px 24px; }
   .page-title .editable { max-width: none; }
 }
+
+.bar span { color: var(--teal); }
