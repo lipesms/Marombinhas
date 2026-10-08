@@ -54,6 +54,30 @@ function Editable({ value, onSave, className = "", autoEdit = false }) {
   );
 }
 
+function ThemeToggle() {
+  const [theme, setTheme] = useState(
+    () => document.documentElement.dataset.theme || "light"
+  );
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("tema", theme);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#0f0f14" : "#f5f3f6");
+  }, [theme]);
+
+  return (
+    <button
+      className="theme-toggle"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label="Alternar tema claro e escuro"
+    >
+      {theme === "dark" ? "☀️" : "🌙"}
+    </button>
+  );
+}
+
 /* ---------------- Home (quando não tem nome na URL) ---------------- */
 function Home() {
   const [name, setName] = useState("");
@@ -321,7 +345,11 @@ function Planner({ user }) {
 }
 
 export default function App() {
-  // Pega o primeiro pedaço da URL: /felipe -> "felipe"
   const user = slugify(location.pathname.split("/")[1] || "");
-  return user ? <Planner user={user} /> : <Home />;
+  return (
+    <>
+      <ThemeToggle />
+      {user ? <Planner user={user} /> : <Home />}
+    </>
+  );
 }
