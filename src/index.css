@@ -1,4 +1,18 @@
 :root {
+  --bg: #f5f3f6;
+  --card: #ffffff;
+  --ink: #1c1a26;
+  --muted: #70748a;
+  --line: #e8e5ee;
+  --accent: #6b4a9e;
+  --accent-soft: #efe9f6;
+  --amber: #8a5a00;
+  --amber-soft: #fdf0d3;
+  --teal: #3f8f7c;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #0f0f14;
   --card: #1a1a22;
   --ink: #ecebf2;
@@ -127,3 +141,16 @@ code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; b
 }
 
 .bar span { color: var(--teal); }
+
+.theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 1.1rem;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.35);
+}
