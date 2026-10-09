@@ -176,7 +176,7 @@ textarea.field { border-radius: 18px; resize: vertical; font: inherit; }
 /* linha do treino com botão "i" */
 .namecell { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .row.open { border-bottom: 0; padding-bottom: 8px; }
-.info {
+.moreInfo {
   flex: none; width: 20px; height: 20px; border-radius: 999px;
   border: 1.5px solid var(--muted); color: var(--muted);
   font-size: 0.7rem; font-weight: 700; font-style: italic; line-height: 1;
