@@ -23,9 +23,15 @@ export default function Home() {
           Com <code>/carol</code>, o da Carol.
         </p>
         <p>
-          <b>Monte seu catálogo de exercícios.</b> Em{" "}
-          <code>/felipe/exercicios</code> você cadastra os exercícios que costuma
-          fazer e escolhe da lista na hora de montar o treino (ou digita um novo).
+          <b>Base de exercícios para todos.</b> Em <code>/exercicios</code> fica a
+          base global: já tem vários exercícios cadastrados e você pode criar os
+          seus, com descrição, ativação muscular e foto (tudo opcional). Na hora
+          de montar o treino é só escolher da base ou digitar um nome.
+        </p>
+        <p>
+          <b>Acompanhe a evolução.</b> Cada vez que você muda o peso de um
+          exercício, o valor entra no histórico. Veja os gráficos em{" "}
+          <code>/felipe/evolucao</code>.
         </p>
         <p>
           <b>Abra de qualquer aparelho.</b> Celular, computador, o que for: o

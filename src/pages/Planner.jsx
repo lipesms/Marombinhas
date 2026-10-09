@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useUserData } from "../hooks/useUserData";
+import { useBase } from "../hooks/useBase";
 import { uid } from "../lib/utils";
+import { parseKg, logWeight } from "../lib/weights";
 import Editable from "../components/Editable";
 import TopBar from "../components/TopBar";
 import StatusScreen from "../components/StatusScreen";
@@ -10,6 +12,7 @@ import ExercisePicker from "../components/ExercisePicker";
 
 export default function Planner({ user }) {
   const { data, update, status, saved } = useUserData(user);
+  const base = useBase();
   const [activeId, setActiveId] = useState(null);
   const [newTabId, setNewTabId] = useState(null); // aba recém-criada abre em edição
   const [picking, setPicking] = useState(false);
@@ -20,6 +23,14 @@ export default function Planner({ user }) {
 
   const { title, workouts, library } = data;
   const active = workouts.find((w) => w.id === activeId) ?? workouts[0];
+
+  // Opções do seletor: base global + catálogo pessoal da versão anterior (sem repetir nomes)
+  const baseItems = base.data?.items ?? [];
+  const names = new Set(baseItems.map((b) => b.name.toLowerCase()));
+  const pickerItems = [
+    ...baseItems,
+    ...library.filter((l) => !names.has(l.name.toLowerCase())),
+  ].map((i) => ({ id: i.id, name: i.name }));
 
   /* ---- treinos (abas) ---- */
   const setWorkouts = (fn) => update((d) => ({ ...d, workouts: fn(d.workouts) }));
@@ -46,10 +57,33 @@ export default function Planner({ user }) {
     setWorkouts((list) =>
       list.map((w) => (w.id === active.id ? { ...w, exercises: fn(w.exercises) } : w))
     );
-  const addExercise = (name) =>
-    updateExercises((list) => [...list, { id: uid(), name, series: "3x10", peso: "0Kg" }]);
+
+  // item vem do seletor: { id, name } se for da base, ou só { name } se for digitado
+  const addExercise = (item) => {
+    const fromBase = item.id && baseItems.some((b) => b.id === item.id);
+    updateExercises((list) => [
+      ...list,
+      {
+        id: uid(),
+        name: item.name,
+        series: "3x10",
+        peso: "0Kg",
+        history: [],
+        ...(fromBase ? { baseId: item.id } : {}),
+      },
+    ]);
+  };
+
+  // Ao mudar o peso, registra o valor de hoje no histórico (usado na página de evolução)
   const editExercise = (id, field, value) =>
-    updateExercises((list) => list.map((ex) => (ex.id === id ? { ...ex, [field]: value } : ex)));
+    updateExercises((list) =>
+      list.map((ex) => {
+        if (ex.id !== id) return ex;
+        const next = { ...ex, [field]: value };
+        if (field === "peso") next.history = logWeight(ex.history, parseKg(value));
+        return next;
+      })
+    );
   const removeExercise = (id) => updateExercises((list) => list.filter((ex) => ex.id !== id));
 
   return (
@@ -84,6 +118,7 @@ export default function Planner({ user }) {
           <ExerciseRow
             key={ex.id}
             ex={ex}
+            info={baseItems.find((b) => b.id === ex.baseId)}
             onEdit={(field, v) => editExercise(ex.id, field, v)}
             onRemove={() => removeExercise(ex.id)}
           />
@@ -91,7 +126,8 @@ export default function Planner({ user }) {
 
         {picking ? (
           <ExercisePicker
-            library={library}
+            items={pickerItems}
+            loading={base.status === "loading"}
             user={user}
             onPick={addExercise}
             onClose={() => setPicking(false)}
@@ -102,7 +138,8 @@ export default function Planner({ user }) {
       </section>
 
       <div className="foot">
-        <a href={`/${user}/exercicios`}>Catálogo de exercícios</a>
+        <a href={`/${user}/evolucao`}>Evolução dos pesos</a>
+        <a href={`/${user}/exercicios`}>Base de exercícios</a>
         {workouts.length > 1 && (
           <button onClick={removeWorkout}>Excluir treino “{active.name}”</button>
         )}

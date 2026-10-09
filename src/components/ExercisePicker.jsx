@@ -2,22 +2,23 @@ import { useState } from "react";
 
 /*
   Aparece ao tocar em "+ Adicionar".
-  Escolha um exercício do catálogo OU digite um nome próprio (Enter ou "+ Usar ...").
+  Escolha um exercício da base OU digite um nome próprio (Enter ou "+ Usar ...").
+  items: [{ id, name }]      onPick({ id?, name })
 */
-export default function ExercisePicker({ library, user, onPick, onClose }) {
+export default function ExercisePicker({ items, loading, user, onPick, onClose }) {
   const [q, setQ] = useState("");
   const term = q.trim();
   const low = term.toLowerCase();
-  const matches = library.filter((e) => e.name.toLowerCase().includes(low));
-  const exact = library.find((e) => e.name.toLowerCase() === low);
+  const matches = items.filter((e) => e.name.toLowerCase().includes(low));
+  const exact = items.find((e) => e.name.toLowerCase() === low);
 
-  const pick = (name) => {
-    onPick(name);
+  const pick = (item) => {
+    onPick(item);
     setQ("");
   };
   const submit = (e) => {
     e.preventDefault();
-    if (term) pick(exact ? exact.name : term);
+    if (term) pick(exact || { name: term });
   };
 
   return (
@@ -28,32 +29,31 @@ export default function ExercisePicker({ library, user, onPick, onClose }) {
           value={q}
           maxLength={60}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Escolha da lista ou digite um nome"
+          placeholder="Escolha da base ou digite um nome"
           aria-label="Exercício"
         />
       </form>
 
       <div className="chips">
         {matches.map((e) => (
-          <button key={e.id} type="button" className="chip" onClick={() => pick(e.name)}>
+          <button key={e.id} type="button" className="chip" onClick={() => pick(e)}>
             {e.name}
           </button>
         ))}
         {term && !exact && (
-          <button type="button" className="chip new" onClick={() => pick(term)}>
+          <button type="button" className="chip new" onClick={() => pick({ name: term })}>
             + Usar “{term}”
           </button>
         )}
       </div>
 
-      {library.length === 0 && !term && (
-        <p className="empty">
-          Seu catálogo está vazio. Digite um nome acima ou cadastre exercícios no catálogo.
-        </p>
+      {loading && <p className="empty">Carregando a base…</p>}
+      {!loading && items.length === 0 && !term && (
+        <p className="empty">A base está vazia. Digite um nome acima ou cadastre exercícios na base.</p>
       )}
 
       <div className="picker-foot">
-        <a href={`/${user}/exercicios`}>Gerenciar catálogo</a>
+        <a href={`/${user}/exercicios`}>Gerenciar base</a>
         <button type="button" onClick={onClose}>Fechar</button>
       </div>
     </div>

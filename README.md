@@ -1,5 +1,5 @@
 # Marombinhas
 
-Rotas:  /  ·  /felipe  ·  /felipe/exercicios
-Dados:  api/treino.js grava um documento por pessoa no Upstash Redis
-        { title, workouts, library }
+Rotas:  /  ·  /exercicios (base global)  ·  /felipe  ·  /felipe/exercicios (mesma base)  ·  /felipe/evolucao
+APIs:   api/treino.js (documento da pessoa) · api/base.js (base global) · api/foto.js (fotos dos exercícios)
+Banco:  Upstash Redis (chaves treino:<nome>, base:global, foto:<id>)
