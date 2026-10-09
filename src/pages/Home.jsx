@@ -16,7 +16,7 @@ export default function Home() {
       <h1 className="brand">Marombinhas</h1>
       <p className="lead">Seu caderno de treino online. Sem cadastro, sem senha.</p>
 
-      <section className="panel info">
+      <section className="panel">
         <p>
           <b>Seu treino mora num endereço com o seu nome.</b> Acessando{" "}
           <code>{location.host}/felipe</code> você vê e edita o treino do Felipe.
