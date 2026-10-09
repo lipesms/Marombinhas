@@ -1,6 +1,5 @@
 import { Redis } from "@upstash/redis";
 
-// O Vercel injeta essas variáveis quando você conecta o banco ao projeto
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN,
@@ -20,7 +19,6 @@ export default async function handler(req, res) {
       const data = await redis.get(key);
       return res.status(200).json({ data: data ?? null });
     }
-
     if (req.method === "PUT") {
       const data = req.body?.data;
       if (!data || typeof data !== "object" || JSON.stringify(data).length > 100000) {
@@ -29,9 +27,8 @@ export default async function handler(req, res) {
       await redis.set(key, data);
       return res.status(200).json({ ok: true });
     }
-
     return res.status(405).json({ error: "Método não permitido" });
-  } catch (err) {
+  } catch {
     return res.status(500).json({ error: "Erro ao falar com o banco" });
   }
 }
