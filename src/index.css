@@ -181,7 +181,7 @@ textarea.field { border-radius: 18px; resize: vertical; font: inherit; }
   border: 1.5px solid var(--muted); color: var(--muted);
   font-size: 0.7rem; font-weight: 700; font-style: italic; line-height: 1;
 }
-.info:hover { border-color: var(--accent); color: var(--accent); }
+.moreInfo:hover { border-color: var(--accent); color: var(--accent); }
 .details-wrap { padding: 4px 0 16px; border-bottom: 1px solid var(--line); }
 .xdetails { display: flex; gap: 14px; align-items: flex-start; font-size: 0.9rem; line-height: 1.45; }
 .xdetails img { width: 96px; height: 96px; object-fit: cover; border-radius: 16px; flex: none; }
