@@ -5,7 +5,7 @@ export default function ExerciseDetails({ item }) {
   return (
     <div className="xdetails">
       {item.photo && <img src={photoUrl(item.photo)} alt={item.name} loading="lazy" />}
-      <div>
+      <div className="xtxt">
         {item.muscles && <p><b>Ativação:</b> {item.muscles}</p>}
         {item.desc && <p>{item.desc}</p>}
       </div>

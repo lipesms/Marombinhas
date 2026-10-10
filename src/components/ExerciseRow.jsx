@@ -13,7 +13,7 @@ export default function ExerciseRow({ ex, info, onEdit, onRemove }) {
         <div className="namecell">
           <Editable className="name" value={ex.name} onSave={(v) => onEdit("name", v)} />
           {hasInfo && (
-            <button className="moreInfo" onClick={() => setOpen(!open)} aria-label="Ver detalhes do exercício">
+            <button className="info-btn" onClick={() => setOpen(!open)} aria-label="Ver detalhes do exercício">
               i
             </button>
           )}
