@@ -43,7 +43,9 @@ h1 {
 }
 h1.brand { max-width: none; }
 .lead { font-size: 1.1rem; margin-bottom: 24px; }
-.logo { display: block; width: 96px; height: 96px; margin-bottom: 20px; }
+.hero { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.logo { display: block; width: 76px; height: 76px; flex: none; }
+.hero h1.brand { margin-bottom: 0; font-size: 1.9rem; min-width: 0; text-wrap: balance; }
 
 .page-title { max-width: none; }
 .page-title .editable { display: block; max-width: 9ch; }
@@ -155,6 +157,9 @@ code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; b
 @media (min-width: 640px) {
   .app { padding-top: 72px; }
   h1 { font-size: 3rem; max-width: none; }
+  .hero { gap: 20px; }
+  .logo { width: 96px; height: 96px; }
+  .hero h1.brand { font-size: 3rem; }
   .page-title .editable { max-width: none; }
   .panel { padding: 12px 28px 28px; }
   .info { padding: 28px; }
@@ -176,16 +181,25 @@ textarea.field { border-radius: 18px; resize: vertical; font: inherit; }
 /* linha do treino com botão "i" */
 .namecell { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .row.open { border-bottom: 0; padding-bottom: 8px; }
-.moreInfo {
+.info-btn {
   flex: none; width: 20px; height: 20px; border-radius: 999px;
   border: 1.5px solid var(--muted); color: var(--muted);
   font-size: 0.7rem; font-weight: 700; font-style: italic; line-height: 1;
 }
-.moreInfo:hover { border-color: var(--accent); color: var(--accent); }
+.info-btn:hover { border-color: var(--accent); color: var(--accent); }
 .details-wrap { padding: 4px 0 16px; border-bottom: 1px solid var(--line); }
-.xdetails { display: flex; gap: 14px; align-items: flex-start; font-size: 0.9rem; line-height: 1.45; }
-.xdetails img { width: 200px; height: 200px; object-fit: cover; border-radius: 16px; flex: none; }
+/* Detalhes do exercício: no celular a foto fica em cima (grande), no desktop ao lado do texto */
+.xdetails { display: flex; flex-direction: column; gap: 14px; font-size: 0.9rem; line-height: 1.45; }
+.xdetails img {
+  display: block; width: 100%; max-width: 280px; min-width: 200px;
+  aspect-ratio: 1; object-fit: cover; border-radius: 18px;
+}
+.xdetails .xtxt { min-width: 0; }
 .xdetails p + p { margin-top: 6px; color: var(--muted); }
+@media (min-width: 640px) {
+  .xdetails { flex-direction: row; align-items: flex-start; gap: 20px; }
+  .xdetails img { width: 240px; max-width: none; flex: none; }
+}
 
 /* formulário de exercício */
 .xform { display: flex; flex-direction: column; gap: 12px; padding: 14px 0 6px; }
@@ -216,7 +230,7 @@ textarea.field { border-radius: 18px; resize: vertical; font: inherit; }
 .sec { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin: 22px 4px 8px; text-transform: uppercase; letter-spacing: 0.06em; }
 .pcard { padding: 14px 0 12px; border-bottom: 1px solid var(--line); }
 .pcard:last-child { border-bottom: 0; }
-.phead { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; margin-bottom: 4px; }
+.phead { padding: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; margin-bottom: 4px; }
 .delta { flex: none; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--line); color: var(--muted); }
 .delta.up { background: color-mix(in srgb, var(--teal) 18%, transparent); color: var(--teal); }
 .delta.down { background: color-mix(in srgb, var(--danger) 16%, transparent); color: var(--danger); }
