@@ -12,8 +12,10 @@ export default function Home() {
 
   return (
     <main className="app">
-      <img className="logo" src="/logo.png" alt="Pombo maromba" />
-      <h1 className="brand">Marombinhas</h1>
+      <header className="hero">
+        <img className="logo" src="/logo.png" alt="Pombo maromba" />
+        <h1 className="brand">Olá, Marombinhas!</h1>
+      </header>
       <p className="lead">Seu caderno de treino online. Sem cadastro, sem senha.</p>
 
       <section className="panel info">
