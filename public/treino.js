@@ -1,7 +1,7 @@
 /*
  * Treinos do Marombinhas: caderno de treino por pessoa, base global de exercícios e evolução dos pesos.
  * Carregado antes do app.js, que chama createTreino() passando seus utilitários.
- * Telas: aba "Treinos" (dentro do painel), /exercicios, /<nome>/exercicios e /<nome>/evolucao.
+ * Telas: aba "Treinos" (dentro do painel), /exercicios (escondida) e /<nome>/evolucao.
  */
 (function () {
   'use strict';
@@ -269,13 +269,12 @@
             ? `<div class="t-picker">
                 <form data-t-form="pick"><input id="t-q" class="in" value="${esc(S.q)}" maxlength="60" autocomplete="off" placeholder="Escolha da base ou digite um nome" aria-label="Exercício"></form>
                 <div class="t-chips" id="t-chips">${chipsHtml()}</div>
-                <div class="t-pfoot"><a href="/${esc(S.slug)}/exercicios">Gerenciar base</a><button type="button" data-t="close-picker">Fechar</button></div>
+                <div class="t-pfoot"><button type="button" data-t="close-picker">Fechar</button></div>
               </div>`
             : '<button class="t-add" data-t="open-picker">+ Adicionar</button>'}
         </section>
         <div class="t-foot">
           <a href="/${esc(S.slug)}/evolucao">Evolução dos pesos</a>
-          <a href="/${esc(S.slug)}/exercicios">Base de exercícios</a>
           ${d.workouts.length > 1 ? `<button data-t="del-w">Excluir treino “${esc(w.name)}”</button>` : ''}
         </div>`;
     }
@@ -571,6 +570,7 @@
 
     /* ---------- pontos de entrada ---------- */
     return {
+      photo: { url: photoUrl, longId, resize: resizeImage, upload: uploadPhoto },
       // Chamado pelo painel quando a aba Treinos está na tela.
       mountTab(slug) {
         paint = paintTab;

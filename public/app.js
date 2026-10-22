@@ -17,7 +17,7 @@ const fmtN = (n, dec = 0) => Number(n || 0).toLocaleString('pt-BR', { maximumFra
 const parseNum = (v) => { const n = parseFloat(String(v).replace(',', '.')); return Number.isFinite(n) && n >= 0 ? n : 0; };
 const fieldVal = (n) => String(n || 0).replace('.', ',');
 const clone = (o) => JSON.parse(JSON.stringify(o));
-const RESERVED = ['api', 'u', 'app', 'admin', 'login', 'entrar', 'criar', 'static', 'public', 'assets', 'logo', 'logo-sm', 'favicon', 'index', 'style', 'healthz', 'robots', 'sitemap', 'www', 'home', 'sobre', 'ajuda', 'exercicios', 'evolucao', 'treino', 'treinos'];
+const RESERVED = ['api', 'u', 'app', 'admin', 'login', 'entrar', 'criar', 'static', 'public', 'assets', 'logo', 'logo-sm', 'favicon', 'index', 'style', 'healthz', 'robots', 'sitemap', 'www', 'home', 'sobre', 'ajuda', 'exercicios', 'evolucao', 'treino', 'treinos', 'receitas', 'cardapio', 'cardapios'];
 const normalizeSlug = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30).replace(/-+$/g, '');
 const validSlug = (s) => /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(s) && !RESERVED.includes(s);
@@ -41,13 +41,15 @@ const ICONS = {
   fork: '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 4-3 7h3v11"/>',
   copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  book: '<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/>',
   dumbbell: '<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>',
 };
 const icon = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 
 const LOGO = '<img class="logo" src="/logo-sm.png" width="36" height="36" alt="">';
 
-let T = null; // módulo de treinos (treino.js), criado depois que api() e toast() existirem
+let T = null;
+let R = null; // módulo do cardápio (receitas.js) // módulo de treinos (treino.js), criado depois que api() e toast() existirem
 
 let toastTimer;
 function toast(msg) {
@@ -79,6 +81,7 @@ async function api(method, url, body) {
 }
 
 T = window.createTreino({ esc, api, toast, icon, logo: LOGO, app });
+R = window.createReceitas({ esc, api, toast, icon, logo: LOGO, app }, T.photo);
 
 /* ================= estado ================= */
 const state = { code: null, goals: null, profile: null, meals: [], date: today(), tab: 'hoje' };
@@ -273,7 +276,7 @@ function viewMetas() {
 }
 
 function nav() {
-  const tabs = [['hoje', 'Hoje', 'plate'], ['semana', 'Semana', 'bars'], ['treinos', 'Treinos', 'dumbbell'], ['metas', 'Metas', 'target']];
+  const tabs = [['hoje', 'Hoje', 'plate'], ['semana', 'Semana', 'bars'], ['treinos', 'Treinos', 'dumbbell'], ['metas', 'Metas', 'target'], ['cardapio', 'Cardápio', 'book']];
   return `<nav class="nav" aria-label="Principal"><div class="nav-in">${tabs.map(([k, l, i]) =>
     `<button data-action="tab" data-tab="${k}" ${state.tab === k ? 'aria-current="page"' : ''}>${icon(i, 22)}${l}</button>`).join('')}</div></nav>`;
 }
@@ -282,11 +285,16 @@ function viewTreinos() {
   return `${topbar()}<div id="t-root"></div>`;
 }
 
+function viewCardapio() {
+  return `${topbar()}<div id="r-root"></div>`;
+}
+
 function render() {
-  const view = state.tab === 'hoje' ? viewHoje() : state.tab === 'semana' ? viewSemana() : state.tab === 'treinos' ? viewTreinos() : viewMetas();
+  const view = state.tab === 'hoje' ? viewHoje() : state.tab === 'semana' ? viewSemana() : state.tab === 'treinos' ? viewTreinos() : state.tab === 'cardapio' ? viewCardapio() : viewMetas();
   const fab = state.goals && (state.tab === 'hoje' || state.tab === 'semana') ? `<button class="fab" data-action="open-add">${icon('plus', 22)}Registrar refeição</button>` : '';
   app.innerHTML = `<div class="shell">${view}</div>${nav()}${fab}`;
   if (state.tab === 'treinos') T.mountTab(state.code);
+  if (state.tab === 'cardapio') R.mountTab(state.code);
 }
 
 /* ================= folha de registro ================= */
@@ -321,6 +329,7 @@ function itemRow(it, i) {
       <input class="in" data-f="qty" value="${esc(it.qty)}" placeholder="Qtd." aria-label="Quantidade" maxlength="40">
       <button class="rm" data-action="del-item" data-i="${i}" aria-label="Remover item">${icon('x', 16)}</button>
     </div>
+    ${it.rec ? `<div class="rec-tag">${icon('book', 14)}da receita: ${esc(it.rec)}</div>` : ''}
     <div class="item-nums">${num('kcal', 'kcal')}${num('p', 'Prot')}${num('c', 'Carb')}${num('f', 'Gord')}</div>
   </div>`;
 }
@@ -489,9 +498,9 @@ const actions = {
   'claim': (el) => claimPanel(el),
   tab: (el) => {
     const t = el.dataset.tab;
-    if (!state.goals && t !== 'metas' && t !== 'treinos') return toast('Defina suas metas para começar.');
+    if (!state.goals && t !== 'metas' && t !== 'treinos' && t !== 'cardapio') return toast('Defina suas metas para começar.');
     state.tab = t;
-    history.replaceState(null, '', t === 'treinos' ? `/${state.code}/treino` : `/${state.code}`);
+    history.replaceState(null, '', t === 'treinos' ? `/${state.code}/treino` : t === 'cardapio' ? `/${state.code}/cardapio` : `/${state.code}`);
     render();
     window.scrollTo(0, 0);
   },
@@ -709,15 +718,16 @@ async function boot(code, opts = {}) {
   if (!a) return landing();
   // Base global de exercícios
   if (normalizeSlug(a) === 'exercicios' && !b) return T.basePage({ back: '/', label: '← início' });
+  if (normalizeSlug(a) === 'receitas' && !b) return R.basePage();
   const slug = normalizeSlug(a);
   if (!validSlug(slug)) return landing();
   const sub = normalizeSlug(b || '');
-  if (sub === 'exercicios') return T.basePage({ back: `/${slug}/treino`, label: '← meu treino' });
   if (sub === 'evolucao') return T.progressPage(slug, { back: `/${slug}/treino`, label: '← meu treino' });
   const wantTab = sub === 'treino' || sub === 'treinos';
-  const clean = wantTab ? `/${slug}/treino` : `/${slug}`;
+  const wantCard = sub === 'cardapio';
+  const clean = wantTab ? `/${slug}/treino` : wantCard ? `/${slug}/cardapio` : `/${slug}`;
   // Corrige maiúsculas, acentos e rotas antigas no endereço (ex.: /Felipe vira /felipe).
   if (location.pathname !== clean) history.replaceState(null, '', clean);
-  boot(slug, wantTab ? { tab: 'treinos' } : {});
+  boot(slug, wantTab ? { tab: 'treinos' } : wantCard ? { tab: 'cardapio' } : {});
 })();
 })();
