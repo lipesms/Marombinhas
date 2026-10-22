@@ -1,0 +1,12 @@
+{
+  "name": "macrinhos",
+  "version": "2.0.0",
+  "description": "Diário de calorias e macros com análise por IA. Cada pessoa acessa pelo próprio link, sem login.",
+  "private": true,
+  "scripts": {
+    "dev": "node dev/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
