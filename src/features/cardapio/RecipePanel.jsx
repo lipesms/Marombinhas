@@ -17,15 +17,39 @@ function Chips({ r }) {
   );
 }
 
+const fmtAmount = (n) => fmtN(n, 2);
+
+/* Detalhes da receita: ajuste de porções (− / +) recalcula as quantidades dos ingredientes e o total de macros. */
 function Details({ r, canEdit, canCopy, onEdit, onDelete, onCopy }) {
+  const base = r.servings || 1;
+  const [n, setN] = useState(base);
+  const k = n / base;
+  const ings = r.ingredients || [];
   const mac = (label, v, unit) => <div className="r-mac"><b className="num">{fmtN(v, 1)}</b><small>{label}{unit ? ` (${unit})` : ''}</small></div>;
   return (
     <div className="r-details">
       {r.photo && <img className="r-photo" src={photoUrl(r.photo)} alt={r.name} loading="lazy" />}
-      <p className="r-portion">Valores por <b>{r.portion}</b></p>
+      <p className="r-portion">Cada porção: <b>{r.portion}</b></p>
       <div className="r-macs">
         {mac('kcal', r.kcal, '')}{mac('Proteínas', r.p, 'g')}{mac('Carboidratos', r.c, 'g')}{mac('Gorduras', r.f, 'g')}{r.fi ? mac('Fibras', r.fi, 'g') : null}
       </div>
+      <div className="r-servings">
+        <span>Porções</span>
+        <div className="r-stepper">
+          <button type="button" onClick={() => setN(Math.max(1, n - 1))} disabled={n <= 1} aria-label="Diminuir porções">−</button>
+          <b className="num" aria-live="polite">{fmtAmount(n)}</b>
+          <button type="button" onClick={() => setN(Math.min(100, n + 1))} aria-label="Aumentar porções">+</button>
+        </div>
+        {n !== base && <button type="button" className="btn link" onClick={() => setN(base)}>Voltar para {fmtAmount(base)}</button>}
+      </div>
+      <p className="small num">Total para {fmtAmount(n)} {n === 1 ? 'porção' : 'porções'}: <b>{fmtN(r.kcal * n, 0)} kcal</b> · P {fmtN(r.p * n, 1)} · C {fmtN(r.c * n, 1)} · G {fmtN(r.f * n, 1)}</p>
+      {ings.length > 0 && (
+        <div className="r-prep"><h4>Ingredientes</h4>
+          <ul className="r-ings">
+            {ings.map((i, idx) => <li key={idx}><b className="num">{i.amount == null ? '' : `${fmtAmount(i.amount * k)} ${i.unit}`.trim()}</b><span>{i.name}</span></li>)}
+          </ul>
+        </div>
+      )}
       {r.prep ? <div className="r-prep"><h4>Modo de preparo</h4><p>{r.prep}</p></div> : <p className="small">Sem modo de preparo cadastrado.</p>}
       <div className="r-actions">
         {canCopy && <button className="btn primary" onClick={onCopy}>+ Adicionar ao meu cardápio</button>}
@@ -41,6 +65,9 @@ function RecipeForm({ recipe, saveUrl, onSaved, onCancel }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const x = recipe || {};
+  // Ingredientes em edição: quantidade como texto enquanto digita ("1," não vira "1")
+  const [ings, setIngs] = useState(() => (x.ingredients || []).map((i) => ({ amount: i.amount == null ? '' : String(i.amount).replace('.', ','), unit: i.unit || '', name: i.name })));
+  const setIng = (idx, o) => setIngs((cur) => cur.map((it, k) => (k === idx ? { ...it, ...o } : it)));
 
   const submit = async (e) => {
     e.preventDefault();
@@ -57,6 +84,8 @@ function RecipeForm({ recipe, saveUrl, onSaved, onCancel }) {
         id: x.id || recipeId(), name, photo: photoId,
         portion: String(fd.get('portion') || '').trim() || '1 porção',
         kcal: Math.round(parseNum(fd.get('kcal'))), p: parseNum(fd.get('p')), c: parseNum(fd.get('c')), f: parseNum(fd.get('f')), fi: parseNum(fd.get('fi')),
+        servings: Math.max(1, parseNum(fd.get('servings')) || 1),
+        ingredients: ings.filter((i) => i.name.trim()).map((i) => ({ name: i.name.trim(), amount: String(i.amount).trim() === '' ? null : parseNum(i.amount), unit: i.unit.trim() })),
         prep: String(fd.get('prep') || '').trim(),
       };
       const r = await api('PUT', saveUrl(item.id), item);
@@ -73,9 +102,24 @@ function RecipeForm({ recipe, saveUrl, onSaved, onCancel }) {
     <form className="r-form" onSubmit={submit} noValidate>
       <label>Nome da receita<input className="in" name="name" maxLength={80} defaultValue={x.name || ''} placeholder="Ex.: Arroz com cenoura" autoFocus={!recipe} /></label>
       <PhotoField current={x.photo} value={photo} onChange={setPhoto} onError={setError} />
-      <label>Porção a que os valores se referem<input className="in" name="portion" maxLength={30} defaultValue={x.portion || ''} placeholder="Ex.: 100 g, 1 fatia, 1 porção" /></label>
+      <div className="r-grid">
+        <label>Tamanho de cada porção<input className="in" name="portion" maxLength={30} defaultValue={x.portion || ''} placeholder="Ex.: 100 g, 1 fatia" /></label>
+        <label>A receita rende (porções)<input className="in num" name="servings" inputMode="decimal" defaultValue={x.servings && x.servings !== 1 ? String(x.servings).replace('.', ',') : ''} placeholder="1" /></label>
+      </div>
       <div className="r-grid">
         {num('kcal', 'Calorias (kcal)')}{num('p', 'Proteínas (g)')}{num('c', 'Carboidratos (g)')}{num('f', 'Gorduras (g)')}{num('fi', 'Fibras (g)')}
+      </div>
+      <div className="r-ing-edit">
+        <span className="r-ing-title">Ingredientes <small>(opcional; informe as quantidades para a receita poder ser ajustada por porções)</small></span>
+        {ings.map((it, idx) => (
+          <div className="r-ing-row" key={idx}>
+            <input className="in num" inputMode="decimal" value={it.amount} onChange={(e) => setIng(idx, { amount: e.target.value })} placeholder="Qtd." aria-label="Quantidade" />
+            <input className="in" value={it.unit} onChange={(e) => setIng(idx, { unit: e.target.value })} placeholder="Un." aria-label="Unidade" maxLength={15} />
+            <input className="in" value={it.name} onChange={(e) => setIng(idx, { name: e.target.value })} placeholder="Ingrediente" aria-label="Ingrediente" maxLength={80} />
+            <button type="button" className="rm" onClick={() => setIngs((cur) => cur.filter((_, k) => k !== idx))} aria-label="Remover ingrediente">×</button>
+          </div>
+        ))}
+        <button type="button" className="btn ghost" onClick={() => setIngs((cur) => [...cur, { amount: '', unit: '', name: '' }])}>+ Adicionar ingrediente</button>
       </div>
       <label>Modo de preparo <small>(opcional)</small><textarea className="in" name="prep" rows={5} maxLength={2000} defaultValue={x.prep || ''} placeholder="Ingredientes e passo a passo" /></label>
       <p className="error" role="alert" hidden={!error}>{error}</p>

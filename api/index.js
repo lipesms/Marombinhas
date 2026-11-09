@@ -495,6 +495,19 @@ const recKey = (slug) => `macrinhos:r:u:${slug}`;
 const RBASE_KEY = 'macrinhos:r:base';
 const ID6_RE = /^[a-z0-9]{6,40}$/;
 
+// Ingredientes: { name, amount (número ou null, ex.: "sal a gosto"), unit }
+function cleanIngredients(list) {
+  if (!Array.isArray(list)) return [];
+  const out = [];
+  for (const it of list.slice(0, 60)) {
+    const name = str(it && it.name, 80);
+    if (!name) continue;
+    const raw = it.amount === '' || it.amount == null ? null : Number(it.amount);
+    out.push({ name, amount: Number.isFinite(raw) && raw >= 0 ? Math.min(Math.round(raw * 100) / 100, 100000) : null, unit: str(it && it.unit, 15) });
+  }
+  return out;
+}
+
 function cleanRecipe(b, id) {
   const name = str(b && b.name, 80);
   if (!name) throw httpError(400, 'Dê um nome à receita.');
@@ -507,6 +520,8 @@ function cleanRecipe(b, id) {
     c: num(b && b.c, 0, 3000),
     f: num(b && b.f, 0, 2000),
     fi: num(b && b.fi, 0, 500),
+    servings: num(b && b.servings, 1, 100, 1) || 1, // quantas porções a receita rende
+    ingredients: cleanIngredients(b && b.ingredients),
     prep: strMulti(b && b.prep, 2000),
     photo: b && typeof b.photo === 'string' && ID6_RE.test(b.photo) ? b.photo : '',
   };

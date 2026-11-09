@@ -486,3 +486,18 @@ textarea.t-input { resize: vertical; line-height: 1.4; }
 .top > .theme-btn { margin-left: auto; }
 .brand .logo.cinna { background: transparent; border-radius: 0; width: 44px; height: 44px; }
 .mascot.cinna { background: transparent; border-radius: 0; box-shadow: none; }
+
+/* ---------- ingredientes e porções das receitas ---------- */
+.r-servings { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-weight: 600; }
+.r-stepper { display: inline-flex; align-items: center; gap: 4px; background: var(--surface-2); border-radius: 999px; padding: 3px; }
+.r-stepper button { width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow); font-size: 1.2rem; font-weight: 700; color: var(--ink); }
+.r-stepper button:disabled { opacity: .4; }
+.r-stepper b { min-width: 44px; text-align: center; font-size: 1.05rem; }
+.r-ings { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.r-ings li { display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.r-ings li:last-child { border-bottom: 0; }
+.r-ings b { color: var(--accent); }
+.r-ing-edit { display: grid; gap: 8px; }
+.r-ing-title { font-weight: 600; font-size: .9rem; }
+.r-ing-row { display: grid; grid-template-columns: 64px 64px 1fr 32px; gap: 6px; align-items: center; }
+.r-ing-row .rm { border: 0; background: var(--surface-2); border-radius: 10px; height: 40px; font-size: 1.2rem; color: var(--muted); }
