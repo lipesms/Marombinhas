@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Brand } from '../components/Brand.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { api } from '../lib/api.js';
 
@@ -16,7 +17,7 @@ export default function ClaimScreen({ slug, onCreated }) {
   };
   return (
     <div className="land">
-      <div className="top"><Brand /></div>
+      <div className="top"><Brand /><ThemeToggle /></div>
       <div className="claim card">
         <h1>Esse painel ainda não existe</h1>
         <p className="lead" style={{ padding: 0 }}>Quer criar <b>{location.host}/{slug}</b> agora?</p>

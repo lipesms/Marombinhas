@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Brand } from '../components/Brand.jsx';
 import { MacroRow, Ring } from '../components/Charts.jsx';
 import Icon from '../components/Icon.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
+import { useTheme } from '../components/ThemeContext.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { RESERVED, fmtN, normalizeSlug } from '../lib/utils.js';
 
@@ -10,6 +12,7 @@ const SAMPLE = { kcal: 1380, goal: 2000 };
 export default function Landing() {
   const toast = useToast();
   const [value, setValue] = useState('');
+  const { theme, assets } = useTheme();
   let saved = null;
   try { saved = localStorage.getItem('macrinhos:code'); } catch { /* ok */ }
 
@@ -23,7 +26,7 @@ export default function Landing() {
 
   return (
     <div className="land">
-      <div className="top"><Brand /></div>
+      <div className="top"><Brand /><ThemeToggle /></div>
       <div className="land-grid">
         <div className="hero">
           <h1>Conte o que comeu. <em>A IA faz a conta.</em></h1>
@@ -43,7 +46,7 @@ export default function Landing() {
           </ul>
         </div>
         <div className="preview">
-          <img className="mascot" src="/logo.png" width="480" height="480" alt="Guaxinim fitness, mascote do Marombinhas" />
+          <img className={`mascot${theme === 'light' ? ' cinna' : ''}`} src={assets.logo} width="480" height="480" alt={theme === 'light' ? 'Mascote fitness do Marombinhas' : 'Guaxinim fitness, mascote do Marombinhas'} />
           <div className="card" aria-hidden="true">
             <span className="tag">Exemplo</span>
             <div className="sum">

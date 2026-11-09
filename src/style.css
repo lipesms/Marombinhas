@@ -1,15 +1,16 @@
 /* Layout: coluna única de app no celular; na landing, duas colunas no desktop. */
+/* Tema claro (Cinnamoroll): azul-marinho e rosa suaves. Tema escuro: guaxinim, mesmas cores de antes. */
 :root {
-  --bg: #F2F4F8;
+  --bg: #F6F9FF;
   --surface: #FFFFFF;
-  --surface-2: #E8ECF3;
-  --ink: #141A24;
-  --muted: #5B6575;
-  --line: #DCE1EA;
-  --accent: #D93D17;
+  --surface-2: #EAF1FD;
+  --ink: #1F2F57;
+  --muted: #62729A;
+  --line: #D9E3F5;
+  --accent: #3A6CC4;
   --accent-ink: #FFFFFF;
-  --accent-soft: #FCE7E1;
-  --kcal: #D93D17;
+  --accent-soft: #FFE4EE;
+  --kcal: #EC5B8E;
   --protein: #3A6BE0;
   --carbs: #D98E00;
   --fat: #9A55D3;
@@ -22,8 +23,8 @@
   --font-body: 'Figtree', system-ui, 'Segoe UI', sans-serif;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
+@media all {
+  :root[data-theme="dark"] {
     --bg: #0E1218;
     --surface: #171D26;
     --surface-2: #232B37;
@@ -478,3 +479,10 @@ textarea.t-input { resize: vertical; line-height: 1.4; }
 .r-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .rec-tag { display: flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 700; color: var(--accent); }
 .rec-tag .ic { flex: none; }
+
+/* ---------- tema e logo ---------- */
+.top-right { display: flex; align-items: center; gap: 8px; }
+.theme-btn { flex: none; }
+.top > .theme-btn { margin-left: auto; }
+.brand .logo.cinna { background: transparent; border-radius: 0; width: 44px; height: 44px; }
+.mascot.cinna { background: transparent; border-radius: 0; box-shadow: none; }
