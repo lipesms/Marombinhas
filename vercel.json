@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "public",
+  "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
       "maxDuration": 60
@@ -63,5 +63,7 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "framework": "vite"
 }

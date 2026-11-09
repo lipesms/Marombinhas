@@ -1,10 +1,21 @@
 {
   "name": "macrinhos",
-  "version": "2.0.0",
-  "description": "Diário de calorias e macros com análise por IA. Cada pessoa acessa pelo próprio link, sem login.",
+  "version": "3.0.0",
+  "description": "Marombinhas: diário de calorias e macros com IA, treinos e cardápio. Cada pessoa acessa pelo próprio link, sem login.",
   "private": true,
   "scripts": {
-    "dev": "node dev/server.js"
+    "dev": "vite",
+    "dev:api": "node dev/server.js",
+    "build": "vite build",
+    "preview": "node dev/server.js"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
   },
   "engines": {
     "node": ">=20"

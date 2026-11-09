@@ -6,7 +6,10 @@ Diário de calorias e macros com análise por IA. Cada pessoa acessa o próprio 
 
 - **Dieta** (`/felipe`): metas, diário de refeições com IA, semana.
 - **Treinos** (`/felipe/treino`, aba à esquerda de Metas): título e descrição da ficha (opcional), seções, exercícios com séries e peso, tudo editável com um toque. Exercícios vêm da base ou são digitados, e o botão "i" abre foto, ativação muscular, descrição e link de exemplo.
-- **Base de exercícios** (`/exercicios`): global, qualquer pessoa cadastra. Só o nome é obrigatório.
+- **Base de exercícios** (`/exercicios`): global e escondida, sem nenhum link no painel (quem digita o endereço consegue editar). Só o nome é obrigatório.
+- **Cardápio** (`/felipe/cardapio`, última aba): receitas da própria pessoa com foto, porção, macros e modo de preparo. Receitas anotadas no painel ficam só no painel dela.
+- **Base de receitas** (`/receitas`): global e escondida, alimentada só por essa URL. Na aba Cardápio ela aparece somente leitura, com o botão "Adicionar ao meu cardápio" (cria uma cópia).
+- **IA e receitas**: ao analisar uma refeição, a IA recebe as receitas da pessoa (e da base) e, quando o prato é o mesmo preparo, o servidor calcula os macros pela receita; se for diferente, estima como antes. Itens vindos de receita mostram "da receita: …".
 - **Evolução** (`/felipe/evolucao`): gráfico do peso de cada exercício; o histórico é gravado ao mudar o peso.
 
 ## Como as peças se encaixam
@@ -64,3 +67,27 @@ Sem banco configurado, usa um Redis falso em memória (os dados somem ao reinici
 - Fotos são reduzidas no navegador e **não são guardadas**; fica só uma miniatura de 96 px. A Vercel limita cada pedido a 4,5 MB, por isso o máximo é de 3 fotos por análise.
 - O plano Hobby da Vercel é para uso não comercial.
 - As estimativas da IA são aproximadas e não substituem nutricionista ou médico.
+
+
+---
+
+## Versão React (Vite)
+
+O front-end foi portado para React 18 + Vite, com o mesmo visual (o `style.css` é o mesmo) e as mesmas funções. A API (`api/`), o banco e as variáveis de ambiente não mudaram.
+
+### Comandos
+- `npm install`
+- `npm run dev:api` (API local na porta 3000, banco falso em memória se não houver Redis) e, em outro terminal, `npm run dev` (site em http://localhost:5173).
+- `npm run build` gera `dist/`; `npm run preview` serve o site completo (dist + API) em http://localhost:3000.
+
+### Vercel
+O `vercel.json` já traz `framework: vite`, `buildCommand` e `outputDirectory: dist`. Basta subir tudo no GitHub; nada muda nas variáveis de ambiente.
+
+### Estrutura de `src/`
+- `main.jsx`, `App.jsx`: entrada e escolha da tela (`lib/routes.js`).
+- `pages/`: `Landing`, `Panel` (painel com as 5 abas), `ClaimScreen`.
+- `features/diario/`: `Hoje`, `Semana`, `Metas`, `MealSheet` (registrar/editar refeição).
+- `features/treino/`: `TreinoTab`, `Editable`, `ExerciseBasePage` (/exercicios), `ProgressPage` (/nome/evolucao), `WeightChart`.
+- `features/cardapio/`: `CardapioTab`, `RecipePanel`, `RecipeBasePage` (/receitas).
+- `hooks/`: `useTreino` (gravação automática), `useCollection` (listas da API).
+- `components/`, `lib/`: peças compartilhadas, cliente da API, fotos e regras sem React.
