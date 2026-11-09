@@ -1,5 +1,6 @@
 'use strict';
-// Servidor local que imita a Vercel: arquivos de /public + a função de /api.
+// Servidor local que imita a Vercel: arquivos de /dist (gerados por npm run build) + a função de /api.
+// Uso: npm run dev:api  (só a API, junto com npm run dev)  ou  npm run build && npm run preview  (site completo)
 // Uso: node dev/server.js   (lê .env.local se existir; sem Redis usa um falso em memória)
 const http = require('http');
 const fs = require('fs');
@@ -14,7 +15,7 @@ if (fs.existsSync(envFile)) {
   }
 }
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };
 
 (async () => {
   const hasRedis = (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL);
@@ -37,8 +38,8 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
     }
     const isPage = p === '/' || /^\/u\/[^/]+\/?$/.test(p) || /^\/[^/.]+(\/[^/.]+)?\/?$/.test(p);
     let file = isPage ? '/index.html' : p;
-    const full = path.join(root, 'public', path.normalize(file));
-    if (!full.startsWith(path.join(root, 'public')) || !fs.existsSync(full) || fs.statSync(full).isDirectory()) {
+    const full = path.join(root, 'dist', path.normalize(file));
+    if (!full.startsWith(path.join(root, 'dist')) || !fs.existsSync(full) || fs.statSync(full).isDirectory()) {
       res.writeHead(302, { Location: '/' });
       return res.end();
     }
